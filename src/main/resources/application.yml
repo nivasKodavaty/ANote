@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: anote1
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=24h
+
+gemini:
+  api-key: ${GEMINI_API_KEY}
+  model: gemini-1.5-flash
+  base-url: https://generativelanguage.googleapis.com
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration-ms: 86400000
+  refresh-expiration-ms: 604800000
+
+server:
+  port: ${APP_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
