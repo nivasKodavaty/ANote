@@ -1,14 +1,21 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ainotes
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:}
+    url: jdbc:postgresql://localhost:5434/ainotes
+    username: postgres
+    password: Nivas123
     driver-class-name: org.postgresql.Driver
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
   jpa:
     show-sql: true
+
+gemini:
+  api-key: AIzaSyBld007kdGNWTNq2pwxKRHx0G538xTcl7g
+  model: gemini-2.0-flash
+  base-url: https://generativelanguage.googleapis.com
+
+jwt:
+  secret: local-dev-secret-minimum-32-characters-long
+  expiration-ms: 86400000
+  refresh-expiration-ms: 604800000
 
 logging:
   level:
