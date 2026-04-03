@@ -1,6 +1,9 @@
 package com.gtr3.ANote.notes.controller
 
+import com.gtr3.ANote.notes.dto.ChatRequest
 import com.gtr3.ANote.notes.dto.CreateNoteRequest
+import com.gtr3.ANote.notes.dto.RefineSelectionRequest
+import com.gtr3.ANote.notes.dto.RefineSelectionResponse
 import com.gtr3.ANote.notes.dto.UpdateNoteRequest
 import com.gtr3.ANote.notes.dto.NoteResponse
 import com.gtr3.ANote.notes.service.NoteService
@@ -38,6 +41,29 @@ class NoteController(private val noteService: NoteService) {
         @AuthenticationPrincipal user: UserDetails
     ): ResponseEntity<NoteResponse> =
         ResponseEntity.ok(noteService.updateNote(request, user.username))
+
+    @PostMapping("/{id}/chat")
+    fun chatOnNote(
+        @PathVariable id: Long,
+        @Valid @RequestBody request: ChatRequest,
+        @AuthenticationPrincipal user: UserDetails
+    ): ResponseEntity<NoteResponse> =
+        ResponseEntity.ok(noteService.chatOnNote(id, request.message, user.username))
+
+    @PostMapping("/{id}/refine-selection")
+    fun refineSelection(
+        @PathVariable id: Long,
+        @Valid @RequestBody request: RefineSelectionRequest,
+        @AuthenticationPrincipal user: UserDetails
+    ): ResponseEntity<RefineSelectionResponse> =
+        ResponseEntity.ok(noteService.refineSelection(id, request, user.username))
+
+    @PatchMapping("/{id}/pin")
+    fun pinNote(
+        @PathVariable id: Long,
+        @AuthenticationPrincipal user: UserDetails
+    ): ResponseEntity<NoteResponse> =
+        ResponseEntity.ok(noteService.pinNote(id, user.username))
 
     @DeleteMapping("/{id}")
     fun deleteNote(

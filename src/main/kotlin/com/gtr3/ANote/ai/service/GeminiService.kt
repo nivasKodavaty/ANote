@@ -66,6 +66,27 @@ class GeminiService(
         return callGemini(body)
     }
 
+    fun refineSelection(selectedText: String, instruction: String, noteContent: String?): String {
+        val contextBlock = if (!noteContent.isNullOrBlank())
+            "Full note for context:\n$noteContent\n" else ""
+        val prompt = """
+            You are editing a specific portion of a note.
+            $contextBlock
+            Selected text to edit:
+            $selectedText
+
+            User instruction: $instruction
+
+            Return ONLY the replacement text for the selected portion.
+            No explanations, no preamble — just the refined text itself.
+        """.trimIndent()
+
+        val body = mapOf(
+            "contents" to listOf(mapOf("parts" to listOf(mapOf("text" to prompt))))
+        )
+        return callGemini(body)
+    }
+
     private fun callGemini(body: Map<String, Any>): String {
         val response = client.post()
             .uri("/v1beta/models/$model:generateContent")

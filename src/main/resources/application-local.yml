@@ -9,7 +9,7 @@ spring:
 
 gemini:
   api-key: AIzaSyBld007kdGNWTNq2pwxKRHx0G538xTcl7g
-  model: gemini-2.0-flash
+  model: gemini-2.5-flash-lite
   base-url: https://generativelanguage.googleapis.com
 
 jwt:
