@@ -1,6 +1,7 @@
 package com.gtr3.ANote.auth.controller
 
 import com.gtr3.ANote.auth.dto.AuthResponse
+import com.gtr3.ANote.auth.dto.GoogleSignInRequest
 import com.gtr3.ANote.auth.dto.LoginRequest
 import com.gtr3.ANote.auth.dto.ProfileResponse
 import com.gtr3.ANote.auth.dto.RefreshRequest
@@ -32,6 +33,10 @@ class AuthController(private val userService: UserService) {
     @PostMapping("/refresh")
     fun refresh(@RequestBody request: RefreshRequest): ResponseEntity<AuthResponse> =
         ResponseEntity.ok(userService.refresh(request))
+
+    @PostMapping("/google")
+    fun googleSignIn(@RequestBody request: GoogleSignInRequest): ResponseEntity<AuthResponse> =
+        ResponseEntity.ok(userService.loginWithGoogle(request))
 
     @GetMapping("/profile")
     fun getProfile(authentication: Authentication): ResponseEntity<ProfileResponse> =

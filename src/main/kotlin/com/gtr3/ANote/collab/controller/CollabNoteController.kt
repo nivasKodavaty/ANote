@@ -74,6 +74,13 @@ class CollabNoteController(private val collabNoteService: CollabNoteService) {
     ): ResponseEntity<RefineSelectionResponse> =
         ResponseEntity.ok(collabNoteService.refineSelection(shareCode, request, user.username))
 
+    @GetMapping("/{shareCode}/participants")
+    fun getParticipants(
+        @PathVariable shareCode: String,
+        @AuthenticationPrincipal user: UserDetails
+    ): ResponseEntity<List<ParticipantResponse>> =
+        ResponseEntity.ok(collabNoteService.getParticipants(shareCode, user.username))
+
     @DeleteMapping("/{shareCode}/leave")
     fun leaveNote(
         @PathVariable shareCode: String,

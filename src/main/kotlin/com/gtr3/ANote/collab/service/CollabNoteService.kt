@@ -188,6 +188,18 @@ class CollabNoteService(
         return RefineSelectionResponse(replacement = replacement)
     }
 
+    fun getParticipants(shareCode: String, email: String): List<ParticipantResponse> {
+        val user = getUser(email)
+        val note = getAccessibleNote(shareCode, user.id)
+        return collabNoteParticipantRepository.findAllByNoteId(note.id).map { p ->
+            ParticipantResponse(
+                email       = p.user.email,
+                displayName = p.user.displayName,
+                joinedAt    = p.joinedAt.toString()
+            )
+        }
+    }
+
     @Transactional
     fun leaveNote(shareCode: String, email: String) {
         val user = getUser(email)

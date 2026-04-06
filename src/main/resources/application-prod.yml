@@ -14,6 +14,9 @@ spring:
       ddl-auto: update
     show-sql: false
 
+google:
+  client-id: ${GOOGLE_CLIENT_ID}
+
 logging:
   level:
     com.gtr3.ANote: INFO

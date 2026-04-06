@@ -12,6 +12,9 @@ gemini:
   model: gemini-2.5-flash-lite
   base-url: https://generativelanguage.googleapis.com
 
+google:
+  client-id: 189529960233-ea5bl5efis2qfcacjfj02bh745jup9p8.apps.googleusercontent.com
+
 jwt:
   secret: local-dev-secret-minimum-32-characters-long
   expiration-ms: 86400000

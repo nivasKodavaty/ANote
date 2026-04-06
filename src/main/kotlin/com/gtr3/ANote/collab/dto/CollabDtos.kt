@@ -53,3 +53,9 @@ data class ConflictResponse(
     val currentContent: String?,
     val currentVersion: Long
 )
+
+data class ParticipantResponse(
+    val email: String,
+    val displayName: String?,
+    val joinedAt: String
+)

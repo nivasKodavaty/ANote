@@ -12,8 +12,11 @@ data class User(
     @Column(nullable = false, unique = true)
     val email: String,
 
-    @Column(name = "password_hash", nullable = false)
-    val passwordHash: String,
+    @Column(name = "password_hash")
+    val passwordHash: String? = null,
+
+    @Column(name = "auth_provider", nullable = false)
+    val authProvider: String = "LOCAL",
 
     @Column(name = "created_at", nullable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(),
