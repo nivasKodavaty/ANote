@@ -3,6 +3,9 @@ package com.gtr3.ANote.ai.service
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
+import reactor.util.retry.Retry
+import java.time.Duration
 
 @Service
 class GeminiService(
@@ -14,6 +17,7 @@ class GeminiService(
         WebClient.builder()
             .baseUrl(baseUrl)
             .defaultHeader("x-goog-api-key", apiKey)
+            .codecs { it.defaultCodecs().maxInMemorySize(2 * 1024 * 1024) }
             .build()
     }
 
@@ -67,11 +71,8 @@ class GeminiService(
     }
 
     fun refineSelection(selectedText: String, instruction: String, noteContent: String?): String {
-        val contextBlock = if (!noteContent.isNullOrBlank())
-            "Full note for context:\n$noteContent\n" else ""
         val prompt = """
             You are editing a specific portion of a note.
-            $contextBlock
             Selected text to edit:
             $selectedText
 
@@ -93,6 +94,19 @@ class GeminiService(
             .bodyValue(body)
             .retrieve()
             .bodyToMono(Map::class.java)
+            // Retry up to 3 times on 429, with exponential backoff starting at 2s.
+            // Covers transient rate-limit spikes on both free and paid tiers.
+            .retryWhen(
+                Retry.backoff(3, Duration.ofSeconds(2))
+                    .maxBackoff(Duration.ofSeconds(16))
+                    .filter { it is WebClientResponseException && it.statusCode.value() == 429 }
+                    .onRetryExhaustedThrow { _, signal ->
+                        RuntimeException(
+                            "AI service is busy — please try again in a moment. " +
+                            "(Rate limit exceeded after ${signal.totalRetries()} retries)"
+                        )
+                    }
+            )
             .block()
 
         @Suppress("UNCHECKED_CAST")

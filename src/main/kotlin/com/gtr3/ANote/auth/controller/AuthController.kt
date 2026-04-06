@@ -2,12 +2,17 @@ package com.gtr3.ANote.auth.controller
 
 import com.gtr3.ANote.auth.dto.AuthResponse
 import com.gtr3.ANote.auth.dto.LoginRequest
+import com.gtr3.ANote.auth.dto.ProfileResponse
 import com.gtr3.ANote.auth.dto.RefreshRequest
 import com.gtr3.ANote.auth.dto.RegisterRequest
+import com.gtr3.ANote.auth.dto.UpdateProfileRequest
 import com.gtr3.ANote.auth.service.UserService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -27,4 +32,15 @@ class AuthController(private val userService: UserService) {
     @PostMapping("/refresh")
     fun refresh(@RequestBody request: RefreshRequest): ResponseEntity<AuthResponse> =
         ResponseEntity.ok(userService.refresh(request))
+
+    @GetMapping("/profile")
+    fun getProfile(authentication: Authentication): ResponseEntity<ProfileResponse> =
+        ResponseEntity.ok(userService.getProfile(authentication.name))
+
+    @PutMapping("/profile")
+    fun updateProfile(
+        authentication: Authentication,
+        @RequestBody request: UpdateProfileRequest
+    ): ResponseEntity<ProfileResponse> =
+        ResponseEntity.ok(userService.updateProfile(authentication.name, request))
 }

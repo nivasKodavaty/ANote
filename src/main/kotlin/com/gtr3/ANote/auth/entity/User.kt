@@ -16,5 +16,14 @@ data class User(
     val passwordHash: String,
 
     @Column(name = "created_at", nullable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now()
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+
+    @Column(name = "display_name")
+    val displayName: String? = null,
+
+    @Column(name = "date_of_birth")
+    val dateOfBirth: String? = null,   // stored as "YYYY-MM-DD"
+
+    @Column(name = "sex")
+    val sex: String? = null
 )

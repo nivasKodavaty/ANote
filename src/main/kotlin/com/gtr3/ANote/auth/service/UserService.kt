@@ -2,8 +2,10 @@ package com.gtr3.ANote.auth.service
 
 import com.gtr3.ANote.auth.dto.AuthResponse
 import com.gtr3.ANote.auth.dto.LoginRequest
+import com.gtr3.ANote.auth.dto.ProfileResponse
 import com.gtr3.ANote.auth.dto.RefreshRequest
 import com.gtr3.ANote.auth.dto.RegisterRequest
+import com.gtr3.ANote.auth.dto.UpdateProfileRequest
 import com.gtr3.ANote.auth.entity.User
 import com.gtr3.ANote.auth.repository.UserRepository
 import org.springframework.security.authentication.BadCredentialsException
@@ -68,6 +70,34 @@ class UserService(
             token = jwtService.generateToken(email),
             refreshToken = jwtService.generateRefreshToken(email),
             email = email
+        )
+    }
+
+    fun getProfile(email: String): ProfileResponse {
+        val user = userRepository.findByEmail(email)
+            .orElseThrow { UsernameNotFoundException("User not found") }
+        return ProfileResponse(
+            email       = user.email,
+            displayName = user.displayName,
+            dateOfBirth = user.dateOfBirth,
+            sex         = user.sex
+        )
+    }
+
+    fun updateProfile(email: String, request: UpdateProfileRequest): ProfileResponse {
+        val user = userRepository.findByEmail(email)
+            .orElseThrow { UsernameNotFoundException("User not found") }
+        val updated = user.copy(
+            displayName = request.displayName,
+            dateOfBirth = request.dateOfBirth,
+            sex         = request.sex
+        )
+        userRepository.save(updated)
+        return ProfileResponse(
+            email       = updated.email,
+            displayName = updated.displayName,
+            dateOfBirth = updated.dateOfBirth,
+            sex         = updated.sex
         )
     }
 }

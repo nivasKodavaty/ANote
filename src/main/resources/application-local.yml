@@ -8,7 +8,7 @@ spring:
     show-sql: true
 
 gemini:
-  api-key: AIzaSyBld007kdGNWTNq2pwxKRHx0G538xTcl7g
+  api-key: AIzaSyAR4xQcsASHzivkqnjhxZveCboN0i4TeQM
   model: gemini-2.5-flash-lite
   base-url: https://generativelanguage.googleapis.com
 

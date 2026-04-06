@@ -22,3 +22,16 @@ data class AuthResponse(
 data class RefreshRequest(
     val refreshToken: String
 )
+
+data class ProfileResponse(
+    val email: String,
+    val displayName: String?,
+    val dateOfBirth: String?,
+    val sex: String?
+)
+
+data class UpdateProfileRequest(
+    val displayName: String?,
+    val dateOfBirth: String?,
+    val sex: String?
+)
