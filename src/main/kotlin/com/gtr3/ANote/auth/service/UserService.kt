@@ -1,9 +1,11 @@
 package com.gtr3.ANote.auth.service
 
+import com.gtr3.ANote.ai.service.AiQuotaService
 import com.gtr3.ANote.auth.dto.AuthResponse
 import com.gtr3.ANote.auth.dto.GoogleSignInRequest
 import com.gtr3.ANote.auth.dto.LoginRequest
 import com.gtr3.ANote.auth.dto.ProfileResponse
+import com.gtr3.ANote.auth.dto.QuotaStatusResponse
 import com.gtr3.ANote.auth.dto.RefreshRequest
 import com.gtr3.ANote.auth.dto.RegisterRequest
 import com.gtr3.ANote.auth.dto.UpdateProfileRequest
@@ -21,7 +23,8 @@ class UserService(
     private val userRepository: UserRepository,
     private val jwtService: JwtService,
     private val passwordEncoder: PasswordEncoder,
-    private val googleTokenVerifier: GoogleTokenVerifier
+    private val googleTokenVerifier: GoogleTokenVerifier,
+    private val aiQuotaService: AiQuotaService
 ) : UserDetailsService {
 
     override fun loadUserByUsername(email: String): UserDetails {
@@ -43,11 +46,13 @@ class UserService(
             email = request.email,
             passwordHash = passwordEncoder.encode(request.password)
         )
-        userRepository.save(user)
+        val savedUser = userRepository.save(user)
         return AuthResponse(
-            token = jwtService.generateToken(user.email),
-            refreshToken = jwtService.generateRefreshToken(user.email),
-            email = user.email
+            token            = jwtService.generateToken(savedUser.email),
+            refreshToken     = jwtService.generateRefreshToken(savedUser.email),
+            email            = savedUser.email,
+            subscriptionTier = savedUser.subscriptionTier,
+            remainingAiCalls = aiQuotaService.getRemainingQuota(savedUser)
         )
     }
 
@@ -61,9 +66,11 @@ class UserService(
             throw BadCredentialsException("Invalid credentials")
         }
         return AuthResponse(
-            token        = jwtService.generateToken(user.email),
-            refreshToken = jwtService.generateRefreshToken(user.email),
-            email        = user.email
+            token            = jwtService.generateToken(user.email),
+            refreshToken     = jwtService.generateRefreshToken(user.email),
+            email            = user.email,
+            subscriptionTier = user.subscriptionTier,
+            remainingAiCalls = aiQuotaService.getRemainingQuota(user)
         )
     }
 
@@ -85,9 +92,11 @@ class UserService(
         }
 
         return AuthResponse(
-            token        = jwtService.generateToken(user.email),
-            refreshToken = jwtService.generateRefreshToken(user.email),
-            email        = user.email
+            token            = jwtService.generateToken(user.email),
+            refreshToken     = jwtService.generateRefreshToken(user.email),
+            email            = user.email,
+            subscriptionTier = user.subscriptionTier,
+            remainingAiCalls = aiQuotaService.getRemainingQuota(user)
         )
     }
 
@@ -111,6 +120,16 @@ class UserService(
             displayName = user.displayName,
             dateOfBirth = user.dateOfBirth,
             sex         = user.sex
+        )
+    }
+
+    fun getQuotaStatus(email: String): QuotaStatusResponse {
+        val user = userRepository.findByEmail(email)
+            .orElseThrow { UsernameNotFoundException("User not found") }
+        return QuotaStatusResponse(
+            subscriptionTier = user.subscriptionTier,
+            remainingAiCalls = aiQuotaService.getRemainingQuota(user),
+            freeDailyLimit   = 15
         )
     }
 

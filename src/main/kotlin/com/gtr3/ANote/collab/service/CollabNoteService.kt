@@ -1,5 +1,6 @@
 package com.gtr3.ANote.collab.service
 
+import com.gtr3.ANote.ai.service.AiQuotaService
 import com.gtr3.ANote.ai.service.GeminiService
 import com.gtr3.ANote.auth.repository.UserRepository
 import com.gtr3.ANote.collab.dto.*
@@ -23,7 +24,8 @@ class CollabNoteService(
     private val collabNoteMessageRepository: CollabNoteMessageRepository,
     private val collabNoteParticipantRepository: CollabNoteParticipantRepository,
     private val userRepository: UserRepository,
-    private val geminiService: GeminiService
+    private val geminiService: GeminiService,
+    private val aiQuotaService: AiQuotaService
 ) {
 
     fun getAllNotes(email: String): List<CollabNoteResponse> {
@@ -55,6 +57,7 @@ class CollabNoteService(
         collabNoteParticipantRepository.save(CollabNoteParticipant(user = user, note = note))
 
         if (request.useAi) {
+            aiQuotaService.consumeQuota(user)
             val generated = geminiService.generateNoteContent(request.title)
             note.content = generated
             note.updatedAt = LocalDateTime.now()
@@ -168,6 +171,7 @@ class CollabNoteService(
             history.add(mapOf("role" to "model", "parts" to listOf(mapOf("text" to (note.content ?: "Understood.")))))
         }
 
+        aiQuotaService.consumeQuota(user)
         val aiResponse = geminiService.chat(history, userMessage)
         collabNoteMessageRepository.save(CollabNoteMessage(note = note, role = "user", message = userMessage))
         collabNoteMessageRepository.save(CollabNoteMessage(note = note, role = "assistant", message = aiResponse))
@@ -184,6 +188,7 @@ class CollabNoteService(
     ): RefineSelectionResponse {
         val user = getUser(email)
         val note = getAccessibleNote(shareCode, user.id)
+        aiQuotaService.consumeQuota(user)
         val replacement = geminiService.refineSelection(request.selectedText, request.instruction, note.content)
         return RefineSelectionResponse(replacement = replacement)
     }

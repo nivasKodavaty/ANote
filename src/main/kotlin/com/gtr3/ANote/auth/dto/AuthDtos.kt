@@ -16,7 +16,15 @@ data class LoginRequest(
 data class AuthResponse(
     val token: String,
     val refreshToken: String,
-    val email: String
+    val email: String,
+    val subscriptionTier: String = "FREE",
+    val remainingAiCalls: Int = 15   // -1 = unlimited
+)
+
+data class QuotaStatusResponse(
+    val subscriptionTier: String,
+    val remainingAiCalls: Int,
+    val freeDailyLimit: Int
 )
 
 data class RefreshRequest(

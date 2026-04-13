@@ -15,6 +15,11 @@ spring:
     caffeine:
       spec: maximumSize=1000,expireAfterWrite=24h
 
+ai:
+  free-daily-limit: 15
+  reward-calls: 5
+  max-daily-ad-watches: 3
+
 gemini:
   api-key: ${GEMINI_API_KEY:placeholder}
   model: gemini-1.5-flash

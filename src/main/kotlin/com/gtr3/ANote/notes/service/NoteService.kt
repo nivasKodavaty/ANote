@@ -1,5 +1,6 @@
 package com.gtr3.ANote.notes.service
 
+import com.gtr3.ANote.ai.service.AiQuotaService
 import com.gtr3.ANote.ai.service.GeminiService
 import com.gtr3.ANote.auth.repository.UserRepository
 import com.gtr3.ANote.notes.dto.CreateNoteRequest
@@ -21,7 +22,8 @@ class NoteService(
     private val noteRepository: NoteRepository,
     private val noteMessageRepository: NoteMessageRepository,
     private val userRepository: UserRepository,
-    private val geminiService: GeminiService
+    private val geminiService: GeminiService,
+    private val aiQuotaService: AiQuotaService
 ) {
     fun getAllNotes(email: String): List<NoteResponse> {
         val user = getUser(email)
@@ -44,6 +46,7 @@ class NoteService(
             Note(user = user, title = request.title, folderName = request.folderName)
         )
         if (request.useAi) {
+            aiQuotaService.consumeQuota(user)
             val generatedContent = geminiService.generateNoteContent(request.title)
             note.content = generatedContent
             note.updatedAt = java.time.LocalDateTime.now()
@@ -143,6 +146,7 @@ class NoteService(
         }
 
         // Call Gemini with conversation history + new user message
+        aiQuotaService.consumeQuota(user)
         val aiResponse = geminiService.chat(history, userMessage)
 
         // Persist user message and AI response — note content is NOT updated here;
@@ -159,6 +163,7 @@ class NoteService(
         val user = getUser(email)
         val note = noteRepository.findByIdAndUserId(noteId, user.id)
             ?: throw NoSuchElementException("Note not found")
+        aiQuotaService.consumeQuota(user)
         val replacement = geminiService.refineSelection(request.selectedText, request.instruction, note.content)
         return RefineSelectionResponse(replacement = replacement)
     }
