@@ -16,9 +16,32 @@ data class LoginRequest(
 data class AuthResponse(
     val token: String,
     val refreshToken: String,
-    val email: String
+    val email: String,
+    val subscriptionTier: String = "FREE",
+    val remainingAiCalls: Int = 15   // -1 = unlimited
+)
+
+data class QuotaStatusResponse(
+    val subscriptionTier: String,
+    val remainingAiCalls: Int,
+    val freeDailyLimit: Int
 )
 
 data class RefreshRequest(
     val refreshToken: String
 )
+
+data class ProfileResponse(
+    val email: String,
+    val displayName: String?,
+    val dateOfBirth: String?,
+    val sex: String?
+)
+
+data class UpdateProfileRequest(
+    val displayName: String?,
+    val dateOfBirth: String?,
+    val sex: String?
+)
+
+data class GoogleSignInRequest(val idToken: String)

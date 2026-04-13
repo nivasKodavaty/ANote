@@ -8,9 +8,12 @@ spring:
     show-sql: true
 
 gemini:
-  api-key: AIzaSyBld007kdGNWTNq2pwxKRHx0G538xTcl7g
-  model: gemini-2.0-flash
+  api-key: AIzaSyDrImI9JBdizGMyogKbKIK7ggjWEMtFkBA
+  model: gemini-2.5-flash-lite
   base-url: https://generativelanguage.googleapis.com
+
+google:
+  client-id: 189529960233-ea5bl5efis2qfcacjfj02bh745jup9p8.apps.googleusercontent.com
 
 jwt:
   secret: local-dev-secret-minimum-32-characters-long

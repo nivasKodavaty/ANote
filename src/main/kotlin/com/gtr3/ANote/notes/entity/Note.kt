@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "notes")
-data class Note(
+data class  Note(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
@@ -21,5 +21,11 @@ data class Note(
     var content: String? = null,
 
     @Column(name = "updated_at", nullable = false)
-    var updatedAt: LocalDateTime = LocalDateTime.now()
+    var updatedAt: LocalDateTime = LocalDateTime.now(),
+
+    @Column(name = "is_pinned", nullable = false, columnDefinition = "boolean default false")
+    var isPinned: Boolean = false,
+
+    @Column(name = "folder_name", length = 200)
+    var folderName: String? = null
 )
