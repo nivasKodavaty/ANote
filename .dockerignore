@@ -1,0 +1,14 @@
+build/
+out/
+.gradle/
+*.class
+*.log
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Local env files — never bake secrets into the image
+*.env
+application-local.yml
